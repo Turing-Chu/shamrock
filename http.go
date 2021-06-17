@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"golang.org/x/text/encoding/simplifiedchinese"
-
 )
 
 var (
@@ -25,8 +24,23 @@ var (
 	}
 )
 
+type Response struct {
+	Status           string // e.g. "200 OK"
+	StatusCode       int    // e.g. 200
+	Proto            string // e.g. "HTTP/1.0"
+	ProtoMajor       int    // e.g. 1
+	ProtoMinor       int    // e.g. 0
+	Header           http.Header
+	Body             []byte
+	ContentLength    int64
+	TransferEncoding []string
+	Close            bool
+	Uncompressed     bool
+	Trailer          http.Header
+}
+
 // send http request
-func Request(method, url string, headers map[string]string, body io.Reader) ([]byte, error) {
+func Request(method, url string, headers map[string]string, body io.Reader) (*Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
@@ -70,11 +84,23 @@ func Request(method, url string, headers map[string]string, body io.Reader) ([]b
 		decoder := simplifiedchinese.GB18030.NewDecoder()
 		tmpData, err := decoder.Bytes(data)
 		if err != nil {
-            return nil, err
+			return nil, err
 		} else {
 			data = tmpData
 		}
 	}
-	return data, nil
+	return &Response{
+		Status:           res.Status,
+		StatusCode:       res.StatusCode,
+		Proto:            res.Proto,
+		ProtoMajor:       res.ProtoMajor,
+		ProtoMinor:       res.ProtoMinor,
+		Header:           res.Header,
+		Body:             data,
+		ContentLength:    res.ContentLength,
+		TransferEncoding: res.TransferEncoding,
+		Close:            res.Close,
+		Uncompressed:     res.Uncompressed,
+		Trailer:          res.Trailer,
+	}, nil
 }
-
