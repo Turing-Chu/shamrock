@@ -48,7 +48,7 @@ func Request(method, url string, headers map[string]string, body io.Reader) ([]b
 	contentEncoding := res.Header.Get("Content-Encoding")
 	data := make([]byte, 0)
 	switch contentEncoding {
-	case "gzip":
+	case "gzip", "br":
 		gzipReader, err := gzip.NewReader(res.Body)
 		if err != nil {
 			return nil, err
