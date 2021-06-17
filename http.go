@@ -48,21 +48,16 @@ func Request(method, url string, headers map[string]string, body io.Reader) ([]b
 	contentEncoding := res.Header.Get("Content-Encoding")
 	data := make([]byte, 0)
 	switch contentEncoding {
-	case "gzip", "br":
+	case "gzip":
 		gzipReader, err := gzip.NewReader(res.Body)
 		if err != nil {
 			return nil, err
 		}
-		data = make([]byte, 0)
-		for true {
-			tmp := make([]byte, 1024)
-			_, err = gzipReader.Read(tmp)
-			if err != nil {
-				data = append(data, tmp...)
-				break
-			}
-			data = append(data, tmp...)
-		}
+		data, err = ioutil.ReadAll(gzipReader)
+	case "br":
+	case "compress":
+	case "deflate":
+
 	default:
 		data, err = ioutil.ReadAll(res.Body)
 		if err != nil {
@@ -75,9 +70,11 @@ func Request(method, url string, headers map[string]string, body io.Reader) ([]b
 		decoder := simplifiedchinese.GB18030.NewDecoder()
 		tmpData, err := decoder.Bytes(data)
 		if err != nil {
+            return nil, err
 		} else {
 			data = tmpData
 		}
 	}
 	return data, nil
 }
+
