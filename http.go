@@ -5,6 +5,7 @@
 package shamrock
 
 import (
+	"compress/flate"
 	"compress/gzip"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/andybalholm/brotli"
 	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
@@ -58,7 +60,6 @@ func Request(method, url string, headers map[string]string, body io.Reader) (*Re
 	if res.StatusCode != 200 {
 		return nil, fmt.Errorf("status=%d", res.StatusCode)
 	}
-
 	contentEncoding := res.Header.Get("Content-Encoding")
 	data := make([]byte, 0)
 	switch contentEncoding {
@@ -69,9 +70,19 @@ func Request(method, url string, headers map[string]string, body io.Reader) (*Re
 		}
 		data, err = ioutil.ReadAll(gzipReader)
 	case "br":
+		brReader := brotli.NewReader(res.Body)
+		if brReader == nil {
+			return nil, fmt.Errorf("create br reader failed")
+		}
+		data, err = ioutil.ReadAll(brReader)
 	case "compress":
-	case "deflate":
 
+	case "deflate":
+		deflateReader := flate.NewReader(res.Body)
+		if deflateReader == nil {
+			return nil, fmt.Errorf("create deflate reader failed")
+		}
+		data, err = ioutil.ReadAll(deflateReader)
 	default:
 		data, err = ioutil.ReadAll(res.Body)
 		if err != nil {
