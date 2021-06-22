@@ -8,13 +8,12 @@ import (
 	"compress/flate"
 	"compress/gzip"
 	"fmt"
+	"github.com/andybalholm/brotli"
+	"golang.org/x/text/encoding/simplifiedchinese"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
-
-	"github.com/andybalholm/brotli"
-	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 var (
@@ -57,39 +56,13 @@ func Request(method, url string, headers map[string]string, body io.Reader) (*Re
 	defer func() {
 		_ = res.Body.Close()
 	}()
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("status=%d", res.StatusCode)
-	}
+
 	contentEncoding := res.Header.Get("Content-Encoding")
-	data := make([]byte, 0)
-	switch contentEncoding {
-	case "gzip":
-		gzipReader, err := gzip.NewReader(res.Body)
-		if err != nil {
-			return nil, err
-		}
-		data, err = ioutil.ReadAll(gzipReader)
-	case "br":
-		brReader := brotli.NewReader(res.Body)
-		if brReader == nil {
-			return nil, fmt.Errorf("create br reader failed")
-		}
-		data, err = ioutil.ReadAll(brReader)
-	case "compress":
-
-	case "deflate":
-		deflateReader := flate.NewReader(res.Body)
-		if deflateReader == nil {
-			return nil, fmt.Errorf("create deflate reader failed")
-		}
-		data, err = ioutil.ReadAll(deflateReader)
-	default:
-		data, err = ioutil.ReadAll(res.Body)
-		if err != nil {
-			return nil, err
-		}
-
+	data, err := parseHttpRespBody(res.Body, contentEncoding)
+	if err != nil {
+		return nil, err
 	}
+
 	// Content-Type: application/javascript; charset=GB18030
 	if strings.Contains(res.Header.Get("Content-Type"), "GB18030") {
 		decoder := simplifiedchinese.GB18030.NewDecoder()
@@ -100,7 +73,8 @@ func Request(method, url string, headers map[string]string, body io.Reader) (*Re
 			data = tmpData
 		}
 	}
-	return &Response{
+
+	resp := &Response{
 		Status:           res.Status,
 		StatusCode:       res.StatusCode,
 		Proto:            res.Proto,
@@ -113,5 +87,43 @@ func Request(method, url string, headers map[string]string, body io.Reader) (*Re
 		Close:            res.Close,
 		Uncompressed:     res.Uncompressed,
 		Trailer:          res.Trailer,
-	}, nil
+	}
+
+	if res.StatusCode != 200 {
+		err = fmt.Errorf("status=%d", res.StatusCode)
+	}
+	return resp, err
+}
+
+func parseHttpRespBody(input io.ReadCloser, contentEncoding string) (data []byte, err error) {
+	data = make([]byte, 0)
+	switch contentEncoding {
+	case "gzip":
+		gzipReader, err := gzip.NewReader(input)
+		if err != nil {
+			return nil, err
+		}
+		data, err = ioutil.ReadAll(gzipReader)
+	case "br":
+		brReader := brotli.NewReader(input)
+		if brReader == nil {
+			return nil, fmt.Errorf("create br reader failed")
+		}
+		data, err = ioutil.ReadAll(brReader)
+	case "compress":
+
+	case "deflate":
+		deflateReader := flate.NewReader(input)
+		if deflateReader == nil {
+			return nil, fmt.Errorf("create deflate reader failed")
+		}
+		data, err = ioutil.ReadAll(deflateReader)
+	default:
+		data, err = ioutil.ReadAll(input)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+	return data, nil
 }
