@@ -9,12 +9,17 @@ import (
 	"time"
 )
 
+const (
+	StdTimeFmt      = "2006-01-02 15:04:05"
+	StdMicroTimeFmt = "2006-01-02 15:04:05.999999"
+)
+
 func FormatStdTime(t time.Time) string {
-	return t.Format("2006-01-02 15:04:05")
+	return t.Format(StdTimeFmt)
 }
 
 func FormatTimeWitNano(t time.Time) string {
-	return t.Format("2006-01-02 15:04:05.999999")
+	return t.Format(StdMicroTimeFmt)
 }
 
 func FormatDuration(d time.Duration) (result string) {
