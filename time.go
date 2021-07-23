@@ -2,7 +2,7 @@
 // Date: 6/15/21 9:53 AM
 // File: time.go
 
-package shamrock 
+package shamrock
 
 import (
 	"fmt"
@@ -13,11 +13,23 @@ func FormatStdTime(t time.Time) string {
 	return t.Format("2006-01-02 15:04:05")
 }
 
-func FormatTimeWitNano(t time.Time) string {
+func FormatTimeWitMicro(t time.Time) string {
 	return t.Format("2006-01-02 15:04:05.999999")
 }
 
+func FormatTimeWitNano(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05.999999999")
+}
+
 func FormatDuration(d time.Duration) (result string) {
+	if d == 0 {
+		return "0s"
+	}
+	positive := true
+	if d < 0 {
+		positive = false
+		d = -d
+	}
 	days := d.Nanoseconds() / (24 * time.Hour.Nanoseconds())
 	d = time.Duration(int64(d) % int64(24*time.Hour))
 	hours := d / time.Hour
@@ -37,6 +49,8 @@ func FormatDuration(d time.Duration) (result string) {
 	if seconds > 0 {
 		result = fmt.Sprintf("%s%ds", result, seconds)
 	}
+	if !positive {
+		return fmt.Sprintf("-%s", result)
+	}
 	return result
 }
-
