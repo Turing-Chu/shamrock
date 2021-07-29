@@ -14,6 +14,7 @@ import (
 func TestFormatDuration(t *testing.T) {
 	fmt.Println("TEST FormatDuration")
 	durations := []time.Duration{
+		0,
 		time.Second,
 		3 * time.Second,
 		time.Minute,

@@ -39,7 +39,7 @@ func FormatDuration(d time.Duration) (result string) {
 	if seconds > 0 || minutes > 0 {
 		result = fmt.Sprintf("%s%dm", result, minutes)
 	}
-	if seconds > 0 {
+	if seconds >= 0 {
 		result = fmt.Sprintf("%s%ds", result, seconds)
 	}
 	return result
