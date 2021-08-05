@@ -9,12 +9,17 @@ import (
 	"time"
 )
 
+const (
+	StdTimeFmt      = "2006-01-02 15:04:05"
+	StdMicroTimeFmt = "2006-01-02 15:04:05.999999"
+)
+
 func FormatStdTime(t time.Time) string {
-	return t.Format("2006-01-02 15:04:05")
+	return t.Format(StdTimeFmt)
 }
 
 func FormatTimeWitMicro(t time.Time) string {
-	return t.Format("2006-01-02 15:04:05.999999")
+	return t.Format(StdMicroTimeFmt)
 }
 
 func FormatTimeWitNano(t time.Time) string {
@@ -46,7 +51,7 @@ func FormatDuration(d time.Duration) (result string) {
 	if seconds > 0 || minutes > 0 {
 		result = fmt.Sprintf("%s%dm", result, minutes)
 	}
-	if seconds > 0 {
+	if seconds >= 0 {
 		result = fmt.Sprintf("%s%ds", result, seconds)
 	}
 	if !positive {
