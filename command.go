@@ -52,6 +52,11 @@ func Run(command string , args []string) (stdOutput, errOutput string, err error
 		return "", "", err
 	}
 
+	err = cmd.Wait()
+	if err != nil {
+		return "","", fmt.Errorf("cmd.Run() failed with %s", err)
+	}
+
 	wg:= sync.WaitGroup{}
 	wg.Add(2)
 	go func() {
@@ -62,10 +67,6 @@ func Run(command string , args []string) (stdOutput, errOutput string, err error
 		stderr, errStderr = copyAndCapture(os.Stderr, stderrIn)
 		wg.Done()
 	}()
-	err = cmd.Wait()
-	if err != nil {
-		return "","", fmt.Errorf("cmd.Run() failed with %s", err)
-	}
 
 	wg.Wait()
 
