@@ -34,30 +34,30 @@ func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
 }
 
 // run shell command
-func Run(command string , args []string) (stdOutput, errOutput string, err error) {
+func Run(command string, args []string) (stdOutput, errOutput string, err error) {
 	cmd := exec.Command(command, args...)
 	var stdout, stderr []byte
 	var errStdout, errStderr error
 	stdoutIn, err := cmd.StdoutPipe()
-	if err !=nil{
+	if err != nil {
 		return "", "", err
 	}
 	stderrIn, err := cmd.StderrPipe()
-	if err !=nil{
+	if err != nil {
 		return "", "", err
 	}
 
-	err  = cmd.Start()
-	if err !=nil{
+	err = cmd.Start()
+	if err != nil {
 		return "", "", err
 	}
 
 	err = cmd.Wait()
 	if err != nil {
-		return "","", fmt.Errorf("cmd.Run() failed with %s", err)
+		return "", "", fmt.Errorf("cmd.Run() failed with %s", err)
 	}
 
-	wg:= sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go func() {
 		stdout, errStdout = copyAndCapture(os.Stdout, stdoutIn)
@@ -79,5 +79,5 @@ func Run(command string , args []string) (stdOutput, errOutput string, err error
 		}
 		return "", "", fmt.Errorf("failed to capture stdout or stderr:%s,%s", errStdout, errStderr)
 	}
-	return string(stdout), string(stderr),nil
+	return string(stdout), string(stderr), nil
 }
