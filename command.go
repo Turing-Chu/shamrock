@@ -71,7 +71,13 @@ func Run(command string , args []string) (stdOutput, errOutput string, err error
 	wg.Wait()
 
 	if errStdout != nil || errStderr != nil {
-		return "","", fmt.Errorf("failed to capture stdout or stderr")
+		if errStdout == nil {
+			errStdout = fmt.Errorf("")
+		}
+		if errStderr == nil {
+			errStderr = fmt.Errorf("")
+		}
+		return "", "", fmt.Errorf("failed to capture stdout or stderr:%s,%s", errStdout, errStderr)
 	}
 	return string(stdout), string(stderr),nil
 }
