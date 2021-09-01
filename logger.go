@@ -2,7 +2,7 @@
 // Date: 6/11/21 2:40 PM
 // File: logger.go
 
-// Common used function & struct
+// Package shamrock Common used function & struct
 package shamrock
 
 import (
@@ -27,7 +27,7 @@ type fieldKey string
 // fieldMap allows customization of the key names for default fields.
 type fieldMap map[fieldKey]string
 
-// Shamrock defined formatter: [timestamp] LEVEL file:LINE function message
+// ShamrockFormatter Shamrock defined formatter: [timestamp] LEVEL file:LINE function message
 type ShamrockFormatter struct {
 	// TimestampFormat sets the format used for marshaling timestamps.
 	TimestampFormat string
@@ -91,7 +91,9 @@ func (f *ShamrockFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	msgLen := len(entry.Message)
-	if entry.Message[0] == '[' && entry.Message[msgLen-1] == ']' {
+	if entry.Message == "" {
+		data[f.fieldMap.resolve(logrus.FieldKeyMsg)] = entry.Message
+	} else if entry.Message[0] == '[' && entry.Message[msgLen-1] == ']' {
 		data[f.fieldMap.resolve(logrus.FieldKeyMsg)] = entry.Message[1 : msgLen-1]
 	} else {
 		data[f.fieldMap.resolve(logrus.FieldKeyMsg)] = entry.Message
