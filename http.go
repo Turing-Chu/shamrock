@@ -40,7 +40,7 @@ type Response struct {
 	Trailer          http.Header
 }
 
-// send http request
+// Request send http request
 func Request(method, url string, headers map[string]string, body io.Reader) (*Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {

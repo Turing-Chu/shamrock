@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestShamrockFormatter(t *testing.T)  {
+func TestShamrockFormatter(t *testing.T) {
 	logger := logrus.New()
 	logger.SetReportCaller(true)
 	logger.SetFormatter(&ShamrockFormatter{

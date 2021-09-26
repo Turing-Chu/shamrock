@@ -19,19 +19,28 @@ func TestFormatStdTime(t *testing.T) {
 	}
 }
 
-func TestFormatTimeWitMicro(t *testing.T) {
+func TestFormatTimeWithMilli(t *testing.T) {
 	now := time.Now()
-	fmt.Printf("now: %s\tForamtStdTimeWithMicro: %s\t now.Format: %s\n", now, FormatTimeWitMicro(now), now.Format("2006-01-02 15:04:05.999999"))
-	if FormatTimeWitMicro(now) != now.Format("2006-01-02 15:04:05.999999") {
-		t.Fatalf("now:%s, ForamtStdTimeWithMicro:%s, now.Format: %s\n",
-			now, FormatTimeWitMicro(now), now.Format("2006-01-02 15:04:05.999999"))
+	fmt.Printf("now: %s\tForamtStdTimeWithMilli: %s\t now.Format: %s\n", now, FormatTimeWithMilli(now), now.Format("2006-01-02 15:04:05.999"))
+	if FormatTimeWithMilli(now) != now.Format("2006-01-02 15:04:05.999") {
+		t.Fatalf("now:%s, ForamtStdTimeWithMilli:%s, now.Format: %s\n",
+			now, FormatTimeWithMilli(now), now.Format("2006-01-02 15:04:05.999"))
 	}
 }
 
-func TestFormatTimeWitNano(t *testing.T) {
+func TestFormatTimeWithMicro(t *testing.T) {
 	now := time.Now()
-	fmt.Printf("now: %s\tForamtStdTimeWithNano: %s\t now.Format: %s\n", now, FormatTimeWitNano(now), now.Format("2006-01-02 15:04:05.999999999"))
-	if FormatTimeWitNano(now) != now.Format("2006-01-02 15:04:05.999999999") {
+	fmt.Printf("now: %s\tForamtStdTimeWithMicro: %s\t now.Format: %s\n", now, FormatTimeWithMicro(now), now.Format("2006-01-02 15:04:05.999999"))
+	if FormatTimeWithMicro(now) != now.Format("2006-01-02 15:04:05.999999") {
+		t.Fatalf("now:%s, ForamtStdTimeWithMicro:%s, now.Format: %s\n",
+			now, FormatTimeWithMicro(now), now.Format("2006-01-02 15:04:05.999999"))
+	}
+}
+
+func TestFormatTimeWithNano(t *testing.T) {
+	now := time.Now()
+	fmt.Printf("now: %s\tForamtStdTimeWithNano: %s\t now.Format: %s\n", now, FormatTimeWithNano(now), now.Format("2006-01-02 15:04:05.999999999"))
+	if FormatTimeWithNano(now) != now.Format("2006-01-02 15:04:05.999999999") {
 		t.Fatalf("now:%s, ForamtStdTimeWithNano:%s, now.Format: %s\n",
 			now, FormatStdTime(now), now.Format("2006-01-02 15:04:05.999999999"))
 	}
