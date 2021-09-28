@@ -48,24 +48,27 @@ func TestFormatTimeWithNano(t *testing.T) {
 
 // 测试文件
 func TestFormatDuration(t *testing.T) {
-	fmt.Println("TEST FormatDuration")
-	durations := []time.Duration{
-		0,
-		time.Second,
-		3 * time.Second,
-		time.Minute,
-		65 * time.Second,
-		59 * time.Minute,
-		60 * time.Minute,
-		24 * time.Hour,
-		25 * time.Hour,
-		43 * time.Hour,
-		125 * 24 * time.Hour,
+	t.Log("TEST FormatDuration")
+	Day := time.Hour * 24
+	durations := []struct {
+		Duration time.Duration
+		Fmt      string
+	}{
+		{0, "0s"},
+		{time.Second, "1s"},
+		{time.Minute, "1m"},
+		{time.Hour + time.Second, "1h01s"},
+		{time.Hour + time.Minute, "1h01m"},
+		{time.Hour + time.Minute + time.Second, "1h01m01s"},
+		{Day, "1d"},
+		{Day + time.Second, "1d01s"},
 	}
+
 	for _, d := range durations {
-		fmt.Printf("test FormatDuration: %s\n", FormatDuration(d))
+		if FormatDuration(d.Duration) != d.Fmt {
+			t.Errorf("duration:%s should format to %s but get %s", d.Duration.String(), d.Fmt, FormatDuration(d.Duration))
+		}
 	}
-	fmt.Println()
 }
 
 func TestFormatTime(t *testing.T) {

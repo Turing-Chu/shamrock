@@ -43,25 +43,57 @@ func FormatDuration(d time.Duration) (result string) {
 	}
 	days := d.Nanoseconds() / (24 * time.Hour.Nanoseconds())
 	d = time.Duration(int64(d) % int64(24*time.Hour))
-	hours := d / time.Hour
-	d = d % time.Hour
-	minutes := d / time.Minute
-	d = d % time.Minute
-	seconds := d / time.Second
 	if days > 0 {
 		result = fmt.Sprintf("%dd", days)
+		if d == 0 {
+			if !positive {
+				result = fmt.Sprintf("-%s", result)
+			}
+			return result
+		}
 	}
-	if minutes > 0 && seconds > 0 || hours > 0 {
-		result = fmt.Sprintf("%s%dh", result, hours)
+
+	hours := d / time.Hour
+	d = d % time.Hour
+	if hours > 0 {
+		if result == "" {
+			result = fmt.Sprintf("%s%dh", result, hours)
+		} else {
+			result = fmt.Sprintf("%s%02dh", result, hours)
+		}
+		if d == 0 {
+			if !positive {
+				result = "-" + result
+			}
+			return result
+		}
 	}
-	if seconds > 0 || minutes > 0 {
-		result = fmt.Sprintf("%s%dm", result, minutes)
+
+	minutes := d / time.Minute
+	d = d % time.Minute
+	if minutes > 0 {
+		if result == "" {
+			result = fmt.Sprintf("%s%dm", result, minutes)
+		} else {
+			result = fmt.Sprintf("%s%02dm", result, minutes)
+		}
+		if d == 0 {
+			if !positive {
+				result = "-" + result
+			}
+			return result
+		}
 	}
-	if seconds >= 0 {
-		result = fmt.Sprintf("%s%ds", result, seconds)
+
+	seconds := d.String()
+	if result != "" && 0 <= d && d < 10*time.Second {
+		result = fmt.Sprintf("%s0%s", result, seconds)
+	} else {
+		result = fmt.Sprintf("%s%s", result, seconds)
 	}
 	if !positive {
-		return fmt.Sprintf("-%s", result)
+		result = "-" + result
 	}
+
 	return result
 }
