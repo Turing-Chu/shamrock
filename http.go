@@ -98,20 +98,12 @@ func Request(method, url string, headers map[string]string, body io.Reader) (*Re
 func parseHttpRespBody(input io.ReadCloser, contentEncoding string) (data []byte, err error) {
 	data = make([]byte, 0)
 	switch contentEncoding {
-	case "gzip":
-		gzipReader, err := gzip.NewReader(input)
-		if err != nil {
-			return nil, err
-		}
-		data, err = ioutil.ReadAll(gzipReader)
 	case "br":
 		brReader := brotli.NewReader(input)
 		if brReader == nil {
 			return nil, fmt.Errorf("create br reader failed")
 		}
 		data, err = ioutil.ReadAll(brReader)
-	case "compress":
-
 	case "deflate":
 		deflateReader := flate.NewReader(input)
 		if deflateReader == nil {
@@ -120,10 +112,7 @@ func parseHttpRespBody(input io.ReadCloser, contentEncoding string) (data []byte
 		data, err = ioutil.ReadAll(deflateReader)
 	default:
 		data, err = ioutil.ReadAll(input)
-		if err != nil {
-			return nil, err
-		}
-
 	}
 	return data, nil
 }
+
