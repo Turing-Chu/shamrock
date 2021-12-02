@@ -114,4 +114,3 @@ func parseHttpRespBody(input io.ReadCloser, contentEncoding string) (data []byte
 	}
 	return data, nil
 }
-
