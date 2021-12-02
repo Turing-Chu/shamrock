@@ -6,7 +6,6 @@ package shamrock
 
 import (
 	"compress/flate"
-	"compress/gzip"
 	"fmt"
 	"github.com/andybalholm/brotli"
 	"golang.org/x/text/encoding/simplifiedchinese"
