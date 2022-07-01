@@ -8,12 +8,13 @@ import (
 	"compress/flate"
 	"compress/gzip"
 	"fmt"
-	"github.com/andybalholm/brotli"
-	"golang.org/x/text/encoding/simplifiedchinese"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/andybalholm/brotli"
+	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 var (
