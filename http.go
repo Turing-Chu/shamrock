@@ -6,6 +6,7 @@ package shamrock
 
 import (
 	"compress/flate"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
