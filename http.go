@@ -109,6 +109,13 @@ func parseHttpRespBody(input io.ReadCloser, contentEncoding string) (data []byte
 			return nil, fmt.Errorf("create deflate reader failed")
 		}
 		data, err = ioutil.ReadAll(deflateReader)
+	case "gzip":
+		deflateReader, err := gzip.NewReader(input)
+		if deflateReader == nil || err != nil {
+			return nil, fmt.Errorf("create gzip reader failed:%v", err)
+		}
+		data, err = ioutil.ReadAll(deflateReader)
+
 	default:
 		data, err = ioutil.ReadAll(input)
 	}
